@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Signing you in…</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      margin: 0; min-height: 100dvh; display: grid; place-items: center;
+      background: #0b0c0d; color: #e6e7e8;
+    }
+    .card {
+      width: min(560px, 92vw); padding: 24px; border-radius: 16px;
+      background: #111315; box-shadow: 0 8px 28px rgba(0,0,0,.45);
+      border: 1px solid #1f2428;
+    }
+    h1 { margin: 0 0 6px; font-size: 18px; font-weight: 600; }
+    p  { margin: 6px 0 0; opacity: .8; }
+    .ok    { color: #9fe870; }
+    .error { color: #ff8c8c; }
+    code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .small { font-size: 12px; opacity: .8; margin-top: 12px; }
+    .hidden { display: none; }
+  </style>
+  <!-- (Optional) Very relaxed CSP to avoid blocking fetch/inline on this minimal page -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https://eu-west-2yjbtfgb5q.auth.eu-west-2.amazoncognito.com; 
+                 connect-src https://eu-west-2yjbtfgb5q.auth.eu-west-2.amazoncognito.com; 
+                 img-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'">
+
+                 body { background: #fff; color: #111; }
+                 .card { background: #fff; border: 1px solid #e5e7eb; }
+                 
+</head>
+<body>
+  <noscript>
+    <div class="card">
+      <h1 class="error">JavaScript required</h1>
+      <p>This page completes sign-in. Please enable JavaScript and try again.</p>
+    </div>
+  </noscript>
+
+  <div id="view-loading" class="card">
+    <h1>Completing sign-in…</h1>
+    <p class="mono small">Exchanging authorisation code for tokens.</p>
+  </div>
+
+  <div id="view-error" class="card hidden">
+    <h1 class="error">Sign-in failed</h1>
+    <p id="err-msg">Something went wrong finishing authentication.</p>
+    <p class="small">You can close this tab and try again.</p>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    // ------- CONFIG (keep aligned with main-auth.js) -------
+    const CF_ROOT         = "https://d1pfw1640errhz.cloudfront.net";
+    const COGNITO_DOMAIN  = "https://eu-west-2yjbtfgb5q.auth.eu-west-2.amazoncognito.com";
+    const CLIENT_ID       = "5hh9g0pqhog16bkangcp4p26o2";
+    const REDIRECT_URI    = `${CF_ROOT}/auth/callback.html`;
+
+    // ------- STORAGE KEYS -------
+    const SK = {
+      ID_TOKEN: "id_token",
+      ACCESS_TOKEN: "access_token",
+      PKCE_CV: "pkce_cv",
+    };
+
+    // ------- VIEW HELPERS -------
+    const $loading = document.getElementById("view-loading");
+    const $error = document.getElementById("view-error");
+    const $errMsg = document.getElementById("err-msg");
+    function showError(msg) {
+      if ($loading) $loading.classList.add("hidden");
+      if ($error) {
+        $error.classList.remove("hidden");
+        if ($errMsg && msg) $errMsg.textContent = msg.toString().slice(0, 500);
+      }
+    }
+
+    // ------- UTILS -------
+    function b64urlToJson(s) {
+      try {
+        if (!s) return null;
+        s = s.replace(/-/g, "+").replace(/_/g, "/");
+        const pad = s.length % 4 ? 4 - (s.length % 4) : 0;
+        if (pad) s += "=".repeat(pad);
+        return JSON.parse(atob(s));
+      } catch { return null; }
+    }
+
+    function setTokens(idToken, accessToken) {
+      if (idToken) sessionStorage.setItem(SK.ID_TOKEN, idToken);
+      if (accessToken) sessionStorage.setItem(SK.ACCESS_TOKEN, accessToken);
+    }
+
+    function getStoredVerifier() {
+      return localStorage.getItem(SK.PKCE_CV) || sessionStorage.getItem(SK.PKCE_CV) || null;
+    }
+
+    async function exchangeCodeForTokens(code, codeVerifier) {
+      const tokenUrl = `${COGNITO_DOMAIN}/oauth2/token`;
+      const body = new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: CLIENT_ID,
+        redirect_uri: REDIRECT_URI,
+        code,
+        code_verifier: codeVerifier
+      });
+
+      const res = await fetch(tokenUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Token endpoint ${res.status}: ${text || res.statusText}`);
+      }
+      return res.json();
+    }
+
+    // ------- MAIN -------
+    (async function run() {
+      try {
+        const params = new URLSearchParams(location.search);
+        const code = params.get("code");
+        const state = params.get("state");
+
+        // Debug proof in console so we can verify state presence
+        console.log("state raw:", state);
+
+        if (!code) {
+          throw new Error("Missing authorization code on callback URL.");
+        }
+
+        // Prefer verifier carried in state; fall back to stored copy
+        let codeVerifier = null;
+        const parsed = b64urlToJson(state);
+        if (parsed && typeof parsed === "object" && parsed.cv) {
+          codeVerifier = parsed.cv;
+        }
+        if (!codeVerifier) {
+          codeVerifier = getStoredVerifier();
+        }
+        if (!codeVerifier) {
+          throw new Error("Missing PKCE code verifier.");
+        }
+
+        const tokens = await exchangeCodeForTokens(code, codeVerifier);
+
+        // Store tokens for the SPA to use
+        setTokens(tokens.id_token, tokens.access_token);
+
+        // Optional: cleanup the verifier (kept during hardening/dev)
+        // localStorage.removeItem(SK.PKCE_CV);
+        // sessionStorage.removeItem(SK.PKCE_CV);
+
+        // Bounce back to the app root
+        window.location.replace(CF_ROOT + "/");
+      } catch (err) {
+        console.error(err);
+        showError(err && err.message ? err.message : "Unknown error.");
+      }
+    })();
+  })();
+  </script>
+</body>
+</html>

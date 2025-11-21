@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Search Assistant</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- MAIN APP -->
+  <div class="container">
+    <!-- AUTH ROW (in-card, top) -->
+    <div class="auth-row">
+      <div class="auth-left">
+        <span id="user-email" class="auth-email hidden"></span>
+      </div>
+      <div class="auth-right">
+        <button id="sign-in-btn" class="btn">Sign In</button>
+        <button id="sign-out-btn" class="btn secondary hidden">Sign Out</button>
+      </div>
+    </div>
+
+    <h1>🔍 RAG Search Assistant</h1>
+    <p class="subtitle">
+      Explore insights from a publicly available dataset related to BMW global sales<br />
+      <span class="note">(Educational prototype – not affiliated with or endorsed by BMW)</span>
+    </p>
+
+    <!-- Query Input -->
+    <textarea id="query" placeholder="Ask your question here..."></textarea>
+
+    <!-- Controls -->
+    <div class="controls">
+      <label for="model">Model:</label>
+      <select id="model">
+        <option value="claude-sonnet">Claude Sonnet 4</option>
+        <option value="claude-haiku">Claude Haiku 4.5</option>
+        <option value="gpt-oss">GPT OSS 120B</option>
+        <option value="mistral">Mistral 7B Instruct</option>
+      </select>
+
+      <label for="k">Top-k:</label>
+      <input type="number" id="k" value="5" min="1" max="10" />
+      <button id="askBtn">Ask</button>
+    </div>
+
+    <!-- Results -->
+    <div id="results">
+      <div id="answer" class="card hidden"></div>
+      <div id="sources" class="card hidden"></div>
+    </div>
+
+    <footer>
+      <p>Powered by AWS Bedrock + Pinecone | Built for Gradient Drift</p>
+      <p class="disclaimer">
+        Dataset licensed under the Open Data Commons Public Domain Dedication and License (PDDL).<br />
+        This application is an independent educational prototype and is not affiliated with or endorsed by BMW Group.
+      </p>
+    </footer>
+  </div>
+
+  <!-- AUTH OVERLAY (shows while redirecting) -->
+  <div id="auth-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Redirecting to sign in…</p>
+    </div>
+  </div>
+
+  <!-- SCRIPTS (order matters) -->
+  <!-- in deploy/index.html -->
+  <script type="module" src="main-auth.v6.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
