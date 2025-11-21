@@ -1,0 +1,26 @@
+# Core web framework
+fastapi==0.115.0
+uvicorn[standard]==0.31.1
+mangum==0.17.0
+
+# Cloud and API clients
+boto3==1.35.44
+botocore==1.35.44
+
+# Vector database
+pinecone-client==5.0.0
+
+# Data handling & utils
+tqdm==4.66.5
+
+# Environment + logging
+python-dotenv==1.0.1
+loguru==0.7.2
+
+# JWT / token verification
+python-jose==3.3.0   
+
+# Optional: testing & linting
+pytest==8.3.3
+requests==2.32.3
+black==24.10.0

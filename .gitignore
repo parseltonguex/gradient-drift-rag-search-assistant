@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS junk
+.DS_Store
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Lambda build outputs
+lambda_build/
+package/
+deploy/
+deploy.zip
+lambda.zip
+app.zip
+
+# Secrets (these should never be committed)
+.env
+response.json
+
