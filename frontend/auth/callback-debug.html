@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Debug Callback</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 2rem;
+      background: #f0f4f8;
+      color: #111;
+    }
+    pre {
+      background: #fff;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Cognito PKCE Debugger</h1>
+  <p>This page will attempt to exchange the auth code for tokens and log everything below.</p>
+  <div id="output"><em>Loading...</em></div>
+
+  <script type="module">
+    const output = document.getElementById('output');
+    const log = (msg, obj = null) => {
+      const block = document.createElement('pre');
+      block.textContent = obj ? `${msg}\n${JSON.stringify(obj, null, 2)}` : msg;
+      output.appendChild(block);
+      console.log(msg, obj || '');
+    };
+
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+      const codeVerifier =
+        localStorage.getItem('pkce_code_verifier') ||
+        sessionStorage.getItem('pkce_code_verifier') ||
+        document.cookie
+          .split('; ')
+          .find(row => row.startsWith('pkce_cv='))
+          ?.split('=')[1] || null;
+
+      log('🔑 code_verifier retrieved', { codeVerifier });
+
+      const clientId = '5hh9g0pqhog16bkangcp4p26o2';
+      const redirectUri = 'https://d1pfw1640errhz.cloudfront.net/auth/callback-debug.html';
+      const tokenEndpoint = 'https://eu-west-2yjbtfgb5q.auth.eu-west-2.amazoncognito.com/oauth2/token';
+
+      log('🔗 URL Params', { code, state });
+      log('🔑 code_verifier from sessionStorage', { codeVerifier });
+
+      if (!code || !codeVerifier) {
+        log('❌ Missing code or code_verifier — cannot proceed.');
+        throw new Error('Missing code or verifier');
+      }
+
+      const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier
+      });
+
+      log('📤 Sending token request to Cognito', {
+        endpoint: tokenEndpoint,
+        payload: Object.fromEntries(body.entries())
+      });
+
+      const response = await fetch(tokenEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body
+      });
+
+      const result = await response.json();
+
+      log('📥 Token response from Cognito', result);
+
+      if (response.ok && result.id_token) {
+        localStorage.setItem('id_token', result.id_token);
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('refresh_token', result.refresh_token);
+        log('✅ Tokens stored in sessionStorage');
+      } else {
+        log('❌ Failed to exchange token', result);
+      }
+    } catch (err) {
+      log('🔥 Error during exchange', err);
+    }
+  </script>
+</body>
+</html>

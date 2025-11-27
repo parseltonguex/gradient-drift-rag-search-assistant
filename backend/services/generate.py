@@ -2,12 +2,10 @@ import os
 import json
 import boto3
 from dotenv import load_dotenv
+from backend.config.settings import BEDROCK_REGION
 
-# -----------------------------------------------------------
-# LOAD ENVIRONMENT VARIABLES
-# -----------------------------------------------------------
-load_dotenv()
-BEDROCK_REGION = os.getenv("BEDROCK_REGION", "us-east-1")
+
+
 
 # -----------------------------------------------------------
 # INITIALIZE BEDROCK CLIENT

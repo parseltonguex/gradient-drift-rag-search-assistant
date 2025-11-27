@@ -9,7 +9,7 @@ load_dotenv()
 # AWS & Bedrock
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-BEDROCK_REGION = os.getenv("BEDROCK_REGION", "us-east-1")
+BEDROCK_REGION = os.getenv("BEDROCK_REGION") or os.getenv("AWS_REGION", "us-east-1")
 
 # Pinecone
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
