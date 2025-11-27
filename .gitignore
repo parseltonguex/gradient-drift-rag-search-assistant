@@ -29,3 +29,4 @@ app.zip
 .env
 response.json
 
+data/processed/bmw_embeddings.jsonl
