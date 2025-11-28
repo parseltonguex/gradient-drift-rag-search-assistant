@@ -1,7 +1,13 @@
 # Core web framework
-fastapi==0.115.0
+fastapi==0.103.2
 uvicorn[standard]==0.31.1
 mangum==0.17.0
+
+# Data models and validation
+pydantic==1.10.13
+
+# Cryptography (used by jose)
+cryptography==42.0.5
 
 # Cloud and API clients
 boto3==1.35.44
@@ -24,3 +30,4 @@ python-jose==3.3.0
 pytest==8.3.3
 requests==2.32.3
 black==24.10.0
+

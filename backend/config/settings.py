@@ -20,12 +20,11 @@ PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "bmw-rag")
 # -----------------------------------------------------------
 
 MODEL_MAP = {
-    "claude-sonnet": "arn:aws:bedrock:us-east-1:593793057732:inference-profile/us.anthropic.claude-3-sonnet-20240229-v1:0",
-    "claude-haiku":  "arn:aws:bedrock:us-east-1:593793057732:inference-profile/us.anthropic.claude-3-haiku-20240307-v1:0",
+    "claude-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0",
+    "claude-haiku":  "anthropic.claude-3-haiku-20240307-v1:0",
     "titan-text":    "amazon.titan-text-lite-v1",
-    "mistral":       "mistral.mistral-7b-instruct-v0:2"
+    "mistral":       "mistral.mistral-7b-instruct-v0:1"
 }
-
 
 # -----------------------------------------------------------
 # APPLICATION CONSTANTS
