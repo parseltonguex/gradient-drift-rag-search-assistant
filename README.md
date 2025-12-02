@@ -171,7 +171,8 @@ timestamp, model, query, match_ids, scores, context_length, answer_length, laten
 
 ## License
 
-MIT License © 2025 
+All rights reserved. This code is provided for reference only and may not be copied, reused, or distributed without explicit permission.
+
 ```
 
 
