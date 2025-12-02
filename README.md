@@ -2,7 +2,7 @@
 **`README.md`**
 
 ```markdown
-# 🔍 RAG Search Assistant
+# RAG Search Assistant
 
 An end-to-end **Retrieval-Augmented Generation (RAG)** prototype that demonstrates how to combine **AWS Bedrock**, **Amazon Titan Embeddings**, **Claude 3 Sonnet**, and **Pinecone** into a working search assistant.
 
@@ -10,14 +10,14 @@ This project forms part of the **Gradient Drift** portfolio — designed to show
 
 ---
 
-## 🧭 Project Overview
+## Project Overview
 
 The RAG Search Assistant allows a user to query a knowledge base (BMW global sales dataset) through a web UI.  
 It retrieves semantically relevant text chunks from a Pinecone vector database and uses a Bedrock-hosted model (Claude, Titan, or DeepSeek) to generate a grounded, context-aware answer.
 
 ---
 
-## ⚙️ Architecture
+## Architecture
 
 ```
 
@@ -32,7 +32,7 @@ User → Front-End (HTML/JS)
 
 ---
 
-## 🧩 Directory Structure
+## Directory Structure
 
 ```
 
@@ -77,7 +77,7 @@ rag-search-assistant/
 
 ---
 
-## 🚀 Setup & Run
+## Setup & Run
 
 ### 1. Clone the Repository
 
@@ -121,7 +121,7 @@ Visit [http://localhost:8000](http://localhost:8000) to access the UI.
 
 ---
 
-## 🧠 Workflow Summary
+## Workflow Summary
 
 1. **User Query → Embedding:** The query is embedded using *Amazon Titan Embeddings*.
 2. **Retrieval → Pinecone:** The embedding is matched against stored BMW vectors.
@@ -131,7 +131,7 @@ Visit [http://localhost:8000](http://localhost:8000) to access the UI.
 
 ---
 
-## 🪵 Logging
+## Logging
 
 All requests are appended to:
 
@@ -147,7 +147,7 @@ timestamp, model, query, match_ids, scores, context_length, answer_length, laten
 
 ---
 
-## 🧰 Dependencies
+## Dependencies
 
 | Component       | Library / Service                       |
 | --------------- | --------------------------------------- |
@@ -161,18 +161,17 @@ timestamp, model, query, match_ids, scores, context_length, answer_length, laten
 
 ---
 
-## 🧩 Next Milestones
+## Next Milestones
 
-* ✅ Phase 1: Data Chunking + Embeddings
-* 🔄 Phase 2: Retrieval + Generation (current)
-* ⏳ Phase 3: Evaluation + Deployment (serverless)
+* Phase 1: Data Chunking + Embeddings
+* Phase 2: Retrieval + Generation (current)
+* Phase 3: Evaluation + Deployment (serverless)
 
 ---
 
-## 📜 License
+## License
 
-MIT License © 2025 Laurence Black — Gradient Drift / Reverie Labs
-
+MIT License © 2025 
 ```
 
 
