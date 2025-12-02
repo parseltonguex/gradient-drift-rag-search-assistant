@@ -1,7 +1,3 @@
-Perfect — here’s a well-structured, developer-friendly `README.md` for your **RAG Search Assistant** project.
-It’s concise enough for GitHub, but detailed enough for anyone cloning or reviewing your repo to grasp the intent, structure, and setup immediately.
-
----
 
 **`README.md`**
 
